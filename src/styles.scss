@@ -1,2 +1,25 @@
 // Carbon Design
 @use '@carbon/styles';
+@import '@carbon/charts/styles.css';
+
+// Layout
+  // Margins
+  .m-1 {
+    margin: 1rem;
+  }
+
+  .mt-1 {
+    margin-top: 1rem;
+  }
+
+  .mr-1 {
+    margin-right: 1rem;
+  }
+
+  .mb-1 {
+    margin-bottom: 1rem;
+  }
+
+  .ml-1 {
+    margin-left: 1rem;
+  }
