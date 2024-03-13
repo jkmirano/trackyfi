@@ -1,9 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { GridModule, HeaderModule, ThemeModule, TilesModule } from 'carbon-components-angular';
 import { HeaderComponent } from './components/header/header.component';
 import { ChartsModule } from '@carbon/charts-angular';
+import {
+  GridModule,
+  HeaderModule,
+  TableModule,
+  ThemeModule,
+  TilesModule
+} from 'carbon-components-angular';
 
 const COMPONENTS = [
   HeaderComponent,
@@ -16,7 +22,8 @@ const MODULES = [
   HeaderModule,
   GridModule,
   TilesModule,
-  ChartsModule
+  ChartsModule,
+  TableModule
 ];
 
 @NgModule({
