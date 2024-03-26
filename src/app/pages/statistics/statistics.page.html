@@ -1,1 +1,52 @@
-<p>statistics works!</p>
+<div
+  cdsGrid
+  [useCssGrid]="true"
+  [condensed]="true"
+  [narrow]="true"
+  [fullWidth]="true"
+  class="px-point-5"
+>
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{sm: 4, md: 8, lg: 8}"
+  >
+    <cds-tile>
+      <ibm-pie-chart
+        [data]="pieData"
+        [options]="pieOptions"
+      ></ibm-pie-chart>
+    </cds-tile>
+  </div>
+
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{sm: 4, md: 8, lg: 8}"
+  >
+    <cds-tile>
+      <ibm-line-chart
+        [data]="lineData"
+        [options]="lineOptions"
+      ></ibm-line-chart>
+    </cds-tile>
+  </div>
+
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{sm: 4, md: 8, lg: 16}"
+  >
+    <cds-table-container>
+      <cds-table
+        [model]="tableModel"
+        [stickyHeader]="false"
+        [size]="'md'"
+        [skeleton]="loading"
+        [showSelectionColumn]="false"
+        [striped]="true"
+        [sortable]="true"
+      ></cds-table>
+    </cds-table-container>
+  </div>
+</div>
