@@ -18,6 +18,12 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/expenses/expenses.module')
       .then(m => m.ExpensesModule)
+  },
+  {
+    path: 'statistics',
+    loadChildren: () =>
+      import('./pages/statistics/statistics.module')
+      .then(m => m.StatisticsModule)
   }
 ];
 
