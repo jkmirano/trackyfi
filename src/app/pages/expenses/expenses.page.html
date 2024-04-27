@@ -1,3 +1,10 @@
+<cds-loading
+  [isActive]="loading"
+  [size]="'normal'"
+  [overlay]="true"
+  *ngIf="loading"
+></cds-loading>
+
 <div
   cdsGrid
   [useCssGrid]="true"
@@ -6,24 +13,13 @@
   [fullWidth]="true"
   class="px-point-5"
 >
-  <div
-    class="mb-1 mx-point-5"
-    cdsCol
-    [columnNumbers]="{sm: 4, md: 8, lg: 8}"
-  >
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{sm: 4, md: 8, lg: 8}">
     <cds-tile>
-      <ibm-pie-chart
-        [data]="pieData"
-        [options]="pieOptions"
-      ></ibm-pie-chart>
+      <ibm-pie-chart [data]="pieData" [options]="pieOptions"></ibm-pie-chart>
     </cds-tile>
   </div>
 
-  <div
-    class="mb-1 mx-point-5"
-    cdsCol
-    [columnNumbers]="{sm: 4, md: 8, lg: 8}"
-  >
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{sm: 4, md: 8, lg: 8}">
     <cds-tile>
       <ibm-line-chart
         [data]="lineData"
@@ -32,11 +28,33 @@
     </cds-tile>
   </div>
 
-  <div
-    class="mb-1 mx-point-5"
-    cdsCol
-    [columnNumbers]="{sm: 4, md: 8, lg: 16}"
-  >
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{sm: 4, md: 8, lg: 16}">
+    <cds-table-toolbar>
+      <cds-table-toolbar-content [formGroup]="filterForm">
+        <cds-table-toolbar-search
+          [expandable]="true"
+          formControlName="keyword"
+        ></cds-table-toolbar-search>
+
+        <button
+          cdsButton="ghost"
+          class="toolbar-action"
+          [cdsOverflowMenu]="templateRef"
+          placement="bottom"
+          [flip]="true"
+          [offset]="{ x: 3, y: 0 }"
+        >
+          <svg
+            cdsIcon="filter"
+            size="16"
+            class="cds--toolbar-action__icon"
+          ></svg>
+        </button>
+
+        <button cdsButton="primary" size="lg">Add Expense</button>
+      </cds-table-toolbar-content>
+    </cds-table-toolbar>
+
     <cds-table-container>
       <cds-table
         [model]="tableModel"
@@ -46,7 +64,54 @@
         [showSelectionColumn]="false"
         [striped]="true"
         [sortable]="true"
+        *ngIf="tableData && tableData.length > 0"
       ></cds-table>
+
+      <cds-table
+        [model]="tableModel"
+        [size]="'md'"
+        [skeleton]="loading"
+        [showSelectionColumn]="false"
+        [striped]="true"
+        *ngIf="!tableData || tableData.length <= 0"
+      >
+        <tbody>
+          <tr>
+            <td colspan="6" rowspan="3" style="text-align: center">
+              No Expense Data Found.
+            </td>
+          </tr>
+          <tr></tr>
+          <tr></tr>
+        </tbody>
+      </cds-table>
     </cds-table-container>
   </div>
 </div>
+
+<ng-template #templateRef>
+  <div style="padding: 0 1rem" (click)="overflowOnClick($event)">
+    <div style="padding-top: 0.5rem; color: grey">Category</div>
+    <cds-checkbox *ngFor="let category of categories">
+      {{category.name}}
+    </cds-checkbox>
+  </div>
+</ng-template>
+
+<ng-template #tableActionsRef>
+  <div class="cell">
+    <button [cdsButton]="'ghost'" [size]="'sm'">
+      <svg cdsIcon="edit" size="16" class="cds--toolbar-action__icon"></svg>
+    </button>
+
+    <button [cdsButton]="'ghost'" [size]="'sm'">
+      <svg
+        cdsIcon="trash-can"
+        size="16"
+        class="cds--toolbar-action__icon"
+      ></svg>
+    </button>
+  </div>
+</ng-template>
+
+<cds-toast [notificationObj]="notificationConfig"></cds-toast>
