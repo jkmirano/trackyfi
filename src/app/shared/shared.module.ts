@@ -8,18 +8,25 @@ import {
   ButtonModule,
   CheckboxModule,
   DialogModule,
+  DropdownModule,
   GridModule,
   HeaderModule,
   IconModule,
+  InputModule,
   LoadingModule,
+  ModalModule,
   NotificationModule,
+  NumberModule,
+  PlaceholderModule,
   TableModule,
   ThemeModule,
   TilesModule,
 } from 'carbon-components-angular';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ModalComponent } from './components/modal/modal.component';
+import { ExpenseFormComponent } from './components/form/expense-form/expense-form.component';
 
-const COMPONENTS = [HeaderComponent];
+const COMPONENTS = [HeaderComponent, ModalComponent, ExpenseFormComponent];
 
 const MODULES = [
   CommonModule,
@@ -38,6 +45,11 @@ const MODULES = [
   LoadingModule,
   ReactiveFormsModule,
   NotificationModule,
+  ModalModule,
+  PlaceholderModule,
+  InputModule,
+  NumberModule,
+  DropdownModule,
 ];
 
 @NgModule({

@@ -1,0 +1,34 @@
+<cds-modal
+  [size]="modalSize"
+  [open]="openModal"
+  (overlaySelected)="closeModal()"
+>
+  <cds-modal-header
+    (closeSelect)="closeModal()"
+    [showCloseButton]="showCloseButton"
+  >
+    <h2 cdsModalHeaderLabel>Form</h2>
+    <h3 cdsModalHeaderHeading>Expense</h3>
+  </cds-modal-header>
+
+  <section cdsModalContent>
+    <app-expense-form
+      [dropdownItems]="categories"
+      *ngIf="formType === 'expense'"
+    ></app-expense-form>
+  </section>
+
+  <cds-modal-footer>
+    <button class="cds--btn cds--btn--secondary" (click)="closeModal()">
+      Cancel
+    </button>
+
+    <button
+      class="cds--btn cds--btn--primary"
+      modal-primary-focus
+      (click)="closeModal()"
+    >
+      Create
+    </button>
+  </cds-modal-footer>
+</cds-modal>

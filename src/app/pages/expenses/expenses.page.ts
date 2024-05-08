@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   IconService,
+  ModalService,
   TableHeaderItem,
   TableItem,
   TableModel,
@@ -21,6 +22,8 @@ import { ExpensesService } from 'src/app/shared/services/expenses.service';
 import { Filter16, Edit16, TrashCan16 } from '@carbon/icons';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
+import { CategoriesService } from 'src/app/shared/services/categories.service';
 
 @Component({
   selector: 'app-expenses',
@@ -32,6 +35,7 @@ export class ExpensesPage implements OnInit {
   destroyed = new Subject<void>();
   loading: boolean = true;
   filter?: Object = {};
+  categories: any[] = [];
   notificationConfig: ToastContent = {
     type: 'success',
     title: 'Sample toast',
@@ -56,15 +60,6 @@ export class ExpensesPage implements OnInit {
   @ViewChild('tableActionsRef', { static: false })
   // @ts-expect-error
   protected tableActionsRef: TemplateRef<any>;
-
-  // Pie Categories
-  // @TODO - will be replaced with api
-  categories: any[] = [
-    { name: 'Bills', type: 'BILLS' },
-    { name: 'Food', type: 'FOOD' },
-    { name: 'Miscellaneous', type: 'MISC' },
-    { name: 'Housing', type: 'HOUSING' },
-  ];
 
   // Pie
   pieData = [
@@ -228,7 +223,9 @@ export class ExpensesPage implements OnInit {
     private expenseService: ExpensesService,
     private is: IconService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private categoryService: CategoriesService,
+    protected modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -261,6 +258,22 @@ export class ExpensesPage implements OnInit {
           if (expenses && expenses.length) {
             this.tableData = expenses;
             this.initializeDataObservable();
+          }
+        },
+        error: (err) => console.log(err),
+      });
+    this.categoryService
+      .getCategories()
+      .pipe(takeUntil(this.destroyed))
+      .subscribe({
+        next: (resp: any) => {
+          if (resp) {
+            this.categories = resp.map((item: any) => {
+              return {
+                ...item,
+                content: item.name,
+              };
+            });
           }
         },
         error: (err) => console.log(err),
@@ -363,7 +376,6 @@ export class ExpensesPage implements OnInit {
 
   prepareData(responseData: any) {
     let tableData: TableItem[][] = responseData.map((data: any) => {
-      console.log(data);
       let newRow: TableItem[] = [];
       let variance = 'n/a';
 
@@ -403,6 +415,19 @@ export class ExpensesPage implements OnInit {
       queryParams: {
         page: page,
         pageLength: this.tableModel.pageLength,
+      },
+    });
+  }
+
+  openAddExpenseModal() {
+    this.modalService.create({
+      component: ModalComponent,
+      inputs: {
+        formType: 'expense',
+        modalSize: 'sm',
+        openModal: true,
+        showCloseButton: true,
+        categories: this.categories,
       },
     });
   }

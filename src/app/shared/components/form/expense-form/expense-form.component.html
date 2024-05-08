@@ -1,0 +1,55 @@
+<div
+  cdsGrid
+  [useCssGrid]="true"
+  [fullWidth]="true"
+  class="px-none"
+  [formGroup]="form"
+>
+  <div class="mb-1 mx-none" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 16 }">
+    <cds-text-label [disabled]="false" [warn]="false" [warnText]="'warnText'">
+      Name
+      <input
+        cdsText
+        [size]="'md'"
+        [warn]="false"
+        [placeholder]="'Name'"
+        formControlName="name"
+      />
+    </cds-text-label>
+  </div>
+
+  <div class="mb-1 mx-none" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 16 }">
+    <cds-dropdown
+      label="Category"
+      [size]="'md'"
+      [dropUp]="false"
+      [warn]="false"
+      [warnText]="'warnText'"
+      placeholder="Select"
+      (selected)="dropdownSelect($event)"
+      formControlName="category"
+    >
+      <cds-dropdown-list [items]="dropdownItems"></cds-dropdown-list>
+    </cds-dropdown>
+  </div>
+
+  <div class="mb-1 mx-none" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
+    <cds-number
+      [label]="'Expected'"
+      [warn]="false"
+      [warnText]="'warnText'"
+      [size]="'md'"
+      formControlName="expected"
+    ></cds-number>
+  </div>
+
+  <div class="mb-1 mx-none" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
+    <cds-number
+      [label]="'Actual'"
+      [warn]="false"
+      [warnText]="'warnText'"
+      [size]="'md'"
+      formControlName="actual"
+    ></cds-number>
+  </div>
+</div>

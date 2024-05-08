@@ -51,7 +51,9 @@
           ></svg>
         </button>
 
-        <button cdsButton="primary" size="lg">Add Expense</button>
+        <button cdsButton="primary" size="lg" (click)="openAddExpenseModal()">
+          Add Expense
+        </button>
       </cds-table-toolbar-content>
     </cds-table-toolbar>
 
@@ -113,5 +115,3 @@
     </button>
   </div>
 </ng-template>
-
-<cds-toast [notificationObj]="notificationConfig"></cds-toast>
