@@ -23,4 +23,9 @@ export class ExpensesService {
 
     return this.http.get(endpoint, { params: params });
   }
+
+  createExpense(payload: any): Observable<any> {
+    let endpoint = `${this.apiUrl}expenses`;
+    return this.http.post(endpoint, payload);
+  }
 }

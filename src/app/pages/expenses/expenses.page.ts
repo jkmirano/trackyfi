@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterContentInit, Component, OnInit, ViewChild } from '@angular/core';
 import {
   IconService,
   ModalService,
@@ -13,6 +13,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   map,
+  Observable,
   Subject,
   switchMap,
   takeUntil,
@@ -30,10 +31,11 @@ import { CategoriesService } from 'src/app/shared/services/categories.service';
   templateUrl: './expenses.page.html',
   styleUrls: ['./expenses.page.scss'],
 })
-export class ExpensesPage implements OnInit {
+export class ExpensesPage implements OnInit, AfterContentInit {
   // general
   destroyed = new Subject<void>();
   loading: boolean = true;
+  dataSaving: boolean = false;
   filter?: Object = {};
   categories: any[] = [];
   notificationConfig: ToastContent = {
@@ -44,6 +46,7 @@ export class ExpensesPage implements OnInit {
     lowContrast: true,
     showClose: true,
   };
+  expenseFormData$: Observable<any> = new Subject<any>();
 
   // Filter Form
   filterForm: FormGroup | any;
@@ -60,6 +63,9 @@ export class ExpensesPage implements OnInit {
   @ViewChild('tableActionsRef', { static: false })
   // @ts-expect-error
   protected tableActionsRef: TemplateRef<any>;
+  @ViewChild('tableCurrencyRef', { static: false })
+  // @ts-expect-error
+  protected tableCurrencyRef: TemplateRef<any>;
 
   // Pie
   pieData = [
@@ -346,10 +352,11 @@ export class ExpensesPage implements OnInit {
           this.tableData = [];
           this.tableModel.header = [
             new TableHeaderItem({ data: 'Name' }),
+            new TableHeaderItem({ data: 'Category' }),
             new TableHeaderItem({ data: 'Expected' }),
             new TableHeaderItem({ data: 'Actual' }),
-            new TableHeaderItem({ data: 'Due' }),
             new TableHeaderItem({ data: 'Variance' }),
+            new TableHeaderItem({ data: 'Due' }),
             new TableHeaderItem({ data: 'Actions' }),
           ];
 
@@ -394,10 +401,17 @@ export class ExpensesPage implements OnInit {
       }
 
       newRow.push(new TableItem({ data: data.name }));
-      newRow.push(new TableItem({ data: data.expected }));
-      newRow.push(new TableItem({ data: data.actual }));
+      newRow.push(new TableItem({ data: data.category }));
+      newRow.push(
+        new TableItem({ data: data.expected, template: this.tableCurrencyRef })
+      );
+      newRow.push(
+        new TableItem({ data: data.actual, template: this.tableCurrencyRef })
+      );
+      newRow.push(
+        new TableItem({ data: variance, template: this.tableCurrencyRef })
+      );
       newRow.push(new TableItem({ data: data.due ? data.due : 'n/a' }));
-      newRow.push(new TableItem({ data: variance }));
       newRow.push(
         new TableItem({ data: data, template: this.tableActionsRef })
       );
@@ -428,7 +442,37 @@ export class ExpensesPage implements OnInit {
         openModal: true,
         showCloseButton: true,
         categories: this.categories,
+        data: this.expenseFormData$,
       },
+    });
+  }
+
+  ngAfterContentInit(): void {
+    // Will Trigger once create button is clicked
+    // Will process the data for saving...
+    this.expenseFormData$.subscribe((expenseFormData) => {
+      if (expenseFormData) {
+        const payload = {
+          ...expenseFormData,
+          category: expenseFormData.category.name,
+        };
+        this.dataSaving = true;
+        this.expenseService
+          .createExpense(payload)
+          .pipe(takeUntil(this.destroyed))
+          .subscribe({
+            next: (resp) => {
+              this.dataSaving = false;
+              if (resp.status === 201) {
+                this.initializeDataObservable();
+              }
+            },
+            error: (err) => {
+              this.dataSaving = false;
+              console.log(err.message);
+            },
+          });
+      }
     });
   }
 }

@@ -1,13 +1,23 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-expense-form',
   templateUrl: './expense-form.component.html',
   styleUrls: ['./expense-form.component.scss'],
 })
-export class ExpenseFormComponent implements OnInit {
+export class ExpenseFormComponent implements OnInit, OnDestroy {
   @Input() dropdownItems: any[] = [];
+  @Output() expenseFormValues: EventEmitter<any> = new EventEmitter();
+  destroyed = new Subject<void>();
   form: FormGroup | any;
 
   constructor() {}
@@ -23,9 +33,13 @@ export class ExpenseFormComponent implements OnInit {
       expected: new FormControl(null),
       actual: new FormControl(null),
     });
+    this.form.valueChanges
+      .pipe(takeUntil(this.destroyed))
+      .subscribe((formVal: any) => this.expenseFormValues.emit(formVal));
   }
 
-  dropdownSelect(e: any) {
-    console.log(e);
+  ngOnDestroy(): void {
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 }

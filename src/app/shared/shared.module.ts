@@ -50,6 +50,7 @@ const MODULES = [
   InputModule,
   NumberModule,
   DropdownModule,
+  LoadingModule,
 ];
 
 @NgModule({

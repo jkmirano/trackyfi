@@ -1,8 +1,8 @@
 <cds-loading
-  [isActive]="loading"
+  [isActive]="loading || dataSaving"
   [size]="'normal'"
   [overlay]="true"
-  *ngIf="loading"
+  *ngIf="loading || dataSaving"
 ></cds-loading>
 
 <div
@@ -98,6 +98,10 @@
       {{category.name}}
     </cds-checkbox>
   </div>
+</ng-template>
+
+<ng-template #tableCurrencyRef let-data="data">
+  <div class="cell">&#x20B1; {{ data | number: '1.0' : 'en-us' }}</div>
 </ng-template>
 
 <ng-template #tableActionsRef>

@@ -5,7 +5,11 @@
   class="px-none"
   [formGroup]="form"
 >
-  <div class="mb-1 mx-none" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 16 }">
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{ sm: 4, md: 8, lg: 16 }"
+  >
     <cds-text-label [disabled]="false" [warn]="false" [warnText]="'warnText'">
       Name
       <input
@@ -18,7 +22,11 @@
     </cds-text-label>
   </div>
 
-  <div class="mb-1 mx-none" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 16 }">
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{ sm: 4, md: 8, lg: 16 }"
+  >
     <cds-dropdown
       label="Category"
       [size]="'md'"
@@ -26,14 +34,13 @@
       [warn]="false"
       [warnText]="'warnText'"
       placeholder="Select"
-      (selected)="dropdownSelect($event)"
       formControlName="category"
     >
       <cds-dropdown-list [items]="dropdownItems"></cds-dropdown-list>
     </cds-dropdown>
   </div>
 
-  <div class="mb-1 mx-none" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
     <cds-number
       [label]="'Expected'"
       [warn]="false"
@@ -43,7 +50,7 @@
     ></cds-number>
   </div>
 
-  <div class="mb-1 mx-none" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
     <cds-number
       [label]="'Actual'"
       [warn]="false"

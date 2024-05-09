@@ -7,18 +7,27 @@ import { ModalService } from 'carbon-components-angular';
   styleUrls: ['./modal.component.scss'],
 })
 export class ModalComponent implements OnInit {
+  formExpenseVal$: any;
+
   constructor(
     @Inject('formType') public formType: string = 'expense',
     @Inject('modalSize') public modalSize: any = 'lg',
     @Inject('openModal') public openModal: boolean = false,
     @Inject('showCloseButton') public showCloseButton: boolean = true,
     @Inject('categories') public categories: any[] = [],
+    @Inject('data') public data: any,
     private modalService: ModalService
   ) {}
 
   ngOnInit(): void {}
 
-  closeModal() {
+  closeModal(hasData: boolean = false) {
     this.openModal = false;
+    this.modalService.destroy();
+    if (hasData) this.data.next(this.formExpenseVal$);
+  }
+
+  getExpenseFormValues(formExpenseVal: any) {
+    this.formExpenseVal$ = formExpenseVal;
   }
 }

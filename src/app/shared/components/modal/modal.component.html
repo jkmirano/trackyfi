@@ -14,6 +14,7 @@
   <section cdsModalContent>
     <app-expense-form
       [dropdownItems]="categories"
+      (expenseFormValues)="getExpenseFormValues($event)"
       *ngIf="formType === 'expense'"
     ></app-expense-form>
   </section>
@@ -26,7 +27,7 @@
     <button
       class="cds--btn cds--btn--primary"
       modal-primary-focus
-      (click)="closeModal()"
+      (click)="closeModal(true)"
     >
       Create
     </button>
