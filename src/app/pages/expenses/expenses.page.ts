@@ -26,6 +26,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { CategoriesService } from 'src/app/shared/services/categories.service';
 import { formatDate } from '@angular/common';
+import { CategoryEnum } from 'src/app/shared/enums/category.enum';
 
 @Component({
   selector: 'app-expenses',
@@ -69,24 +70,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
   protected tableCurrencyRef: TemplateRef<any>;
 
   // Pie
-  pieData = [
-    {
-      group: 'Bills',
-      value: 10000,
-    },
-    {
-      group: 'Housing',
-      value: 300,
-    },
-    {
-      group: 'Food',
-      value: 1500,
-    },
-    {
-      group: 'Miscellaneous',
-      value: 800,
-    },
-  ];
+  pieData: any[] = [];
   pieOptions: any = {
     title: 'Expenses',
     resizable: true,
@@ -258,18 +242,25 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       pageNumber: 1,
       pageSize: 10,
     };
+    this.initFirstExpenses();
+    this.initGetCategories();
+  }
+
+  initFirstExpenses() {
     this.expenseService
       .getExpenses(this.filter)
       .pipe(takeUntil(this.destroyed))
       .subscribe({
         next: (expenses: any) => {
           if (expenses && expenses.status === 200) {
-            this.tableData = expenses.data;
             this.initializeDataObservable();
           }
         },
         error: (err) => console.log(err),
       });
+  }
+
+  initGetCategories() {
     this.categoryService
       .getCategories()
       .pipe(takeUntil(this.destroyed))
@@ -286,6 +277,37 @@ export class ExpensesPage implements OnInit, AfterContentInit {
         },
         error: (err) => console.log(err),
       });
+  }
+
+  evalExpensePieData() {
+    if (this.categories.length > 0 && this.tableData.length > 0) {
+      let billsVal = 0;
+      let foodVal = 0;
+      let miscVal = 0;
+      let housingVal = 0;
+      this.tableData.forEach((data) => {
+        if (data.category.type === CategoryEnum.Bills) billsVal += data.actual;
+        if (data.category.type === CategoryEnum.Food) foodVal += data.actual;
+        if (data.category.type === CategoryEnum.Misc) miscVal += data.actual;
+        if (data.category.type === CategoryEnum.Housing)
+          housingVal += data.actual;
+      });
+      this.pieData = this.categories.map((category) => {
+        return {
+          group: category.content,
+          value:
+            category.type === CategoryEnum.Bills
+              ? billsVal
+              : category.type === CategoryEnum.Food
+              ? foodVal
+              : category.type === CategoryEnum.Misc
+              ? miscVal
+              : category.type === CategoryEnum.Housing
+              ? housingVal
+              : 0,
+        };
+      });
+    }
   }
 
   initializeDataObservable() {
@@ -370,11 +392,13 @@ export class ExpensesPage implements OnInit, AfterContentInit {
             this.tableModel.currentPage = response?.meta?.page || 1;
             this.tableModel.pageLength = response?.meta?.displayItem || 10;
             this.tableModel.totalDataLength = response?.meta?.total || 0;
+            this.evalExpensePieData();
           } else {
             this.tableModel.data = [];
             this.tableModel.currentPage = response?.meta?.page || 1;
             this.tableModel.pageLength = response?.meta?.displayItem || 10;
             this.tableModel.totalDataLength = response?.meta?.total || 0;
+            this.pieData = [];
           }
 
           this.loading = false;
