@@ -1,8 +1,8 @@
 <cds-loading
-  [isActive]="loading || dataSaving"
+  [isActive]="loading"
   [size]="'normal'"
   [overlay]="true"
-  *ngIf="loading || dataSaving"
+  *ngIf="loading"
 ></cds-loading>
 
 <div
@@ -104,13 +104,13 @@
   <div class="cell">&#x20B1; {{ data | number: '1.0' : 'en-us' }}</div>
 </ng-template>
 
-<ng-template #tableActionsRef>
+<ng-template #tableActionsRef let-data="data">
   <div class="cell">
     <button [cdsButton]="'ghost'" [size]="'sm'">
       <svg cdsIcon="edit" size="16" class="cds--toolbar-action__icon"></svg>
     </button>
 
-    <button [cdsButton]="'ghost'" [size]="'sm'">
+    <button [cdsButton]="'ghost'" [size]="'sm'" (click)="deleteExpense(data)">
       <svg
         cdsIcon="trash-can"
         size="16"

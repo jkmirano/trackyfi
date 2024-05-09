@@ -28,4 +28,9 @@ export class ExpensesService {
     let endpoint = `${this.apiUrl}expenses`;
     return this.http.post(endpoint, payload);
   }
+
+  deleteExpense(_id: string): Observable<any> {
+    let endpoint = `${this.apiUrl}expenses/${_id}`;
+    return this.http.delete(endpoint);
+  }
 }

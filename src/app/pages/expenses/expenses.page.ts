@@ -37,7 +37,6 @@ export class ExpensesPage implements OnInit, AfterContentInit {
   // general
   destroyed = new Subject<void>();
   loading: boolean = false;
-  dataSaving: boolean = false;
   filter?: Object = {};
   categories: any[] = [];
   notificationConfig: ToastContent = {
@@ -479,6 +478,24 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     });
   }
 
+  deleteExpense(expenseData: any) {
+    this.loading = true;
+    this.expenseService
+      .deleteExpense(expenseData._id)
+      .pipe(takeUntil(this.destroyed))
+      .subscribe({
+        next: (resp) => {
+          if (resp.status === 200) {
+            this.initData();
+          }
+        },
+        error: (err) => {
+          this.loading = false;
+          console.log(err);
+        },
+      });
+  }
+
   ngAfterContentInit(): void {
     // Will Trigger once create button is clicked
     // Will process the data for saving...
@@ -492,19 +509,18 @@ export class ExpensesPage implements OnInit, AfterContentInit {
           },
           due: new Date(expenseFormData.due).toISOString(),
         };
-        this.dataSaving = true;
+        this.loading = true;
         this.expenseService
           .createExpense(payload)
           .pipe(takeUntil(this.destroyed))
           .subscribe({
             next: (resp) => {
-              this.dataSaving = false;
               if (resp.status === 201) {
-                this.initializeDataObservable();
+                this.initData();
               }
             },
             error: (err) => {
-              this.dataSaving = false;
+              this.loading = false;
               console.log(err.message);
             },
           });
