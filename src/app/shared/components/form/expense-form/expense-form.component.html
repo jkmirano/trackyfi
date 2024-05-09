@@ -40,6 +40,22 @@
     </cds-dropdown>
   </div>
 
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{ sm: 4, md: 8, lg: 16 }"
+  >
+    <cds-date-picker
+      [label]="'Due Date'"
+      [size]="'md'"
+      [warn]="false"
+      [warnText]="'warnText'"
+      [language]="'en'"
+      [dateFormat]="'m/d/Y'"
+      formControlName="due"
+    ></cds-date-picker>
+  </div>
+
   <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
     <cds-number
       [label]="'Expected'"
@@ -47,6 +63,7 @@
       [warnText]="'warnText'"
       [size]="'md'"
       formControlName="expected"
+      class="w-full"
     ></cds-number>
   </div>
 

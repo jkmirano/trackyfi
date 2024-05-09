@@ -25,6 +25,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { CategoriesService } from 'src/app/shared/services/categories.service';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-expenses',
@@ -34,7 +35,7 @@ import { CategoriesService } from 'src/app/shared/services/categories.service';
 export class ExpensesPage implements OnInit, AfterContentInit {
   // general
   destroyed = new Subject<void>();
-  loading: boolean = true;
+  loading: boolean = false;
   dataSaving: boolean = false;
   filter?: Object = {};
   categories: any[] = [];
@@ -252,6 +253,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
   }
 
   initData() {
+    this.loading = true;
     this.filter = {
       pageNumber: 1,
       pageSize: 10,
@@ -261,8 +263,8 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       .pipe(takeUntil(this.destroyed))
       .subscribe({
         next: (expenses: any) => {
-          if (expenses && expenses.length) {
-            this.tableData = expenses;
+          if (expenses && expenses.status === 200) {
+            this.tableData = expenses.data;
             this.initializeDataObservable();
           }
         },
@@ -360,8 +362,8 @@ export class ExpensesPage implements OnInit, AfterContentInit {
             new TableHeaderItem({ data: 'Actions' }),
           ];
 
-          if (response && response.length > 0) {
-            const data = response;
+          if (response && response.status === 200) {
+            const data = response.data;
             this.tableData = data;
 
             this.tableModel.data = this.prepareData(data);
@@ -401,7 +403,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       }
 
       newRow.push(new TableItem({ data: data.name }));
-      newRow.push(new TableItem({ data: data.category }));
+      newRow.push(new TableItem({ data: data.category.name }));
       newRow.push(
         new TableItem({ data: data.expected, template: this.tableCurrencyRef })
       );
@@ -411,7 +413,13 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       newRow.push(
         new TableItem({ data: variance, template: this.tableCurrencyRef })
       );
-      newRow.push(new TableItem({ data: data.due ? data.due : 'n/a' }));
+      newRow.push(
+        new TableItem({
+          data: data.due
+            ? formatDate(new Date(data.due), 'MMMM d, y', 'en-us')
+            : 'n/a',
+        })
+      );
       newRow.push(
         new TableItem({ data: data, template: this.tableActionsRef })
       );
@@ -454,7 +462,11 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       if (expenseFormData) {
         const payload = {
           ...expenseFormData,
-          category: expenseFormData.category.name,
+          category: {
+            name: expenseFormData.category.name,
+            type: expenseFormData.category.type,
+          },
+          due: new Date(expenseFormData.due).toISOString(),
         };
         this.dataSaving = true;
         this.expenseService

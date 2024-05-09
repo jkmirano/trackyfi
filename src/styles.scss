@@ -98,8 +98,25 @@
       &-2 { padding-left: 2rem; }
     }
   }
+  // Width & Height
+  .w {
+    &-full { width: 100%; }
+  }
+
+  .h {
+    &-full { height: 100%; }
+  }
 
 // Carbon Design CSS Overrides
-.cds--loading-overlay {
-  z-index: 9999;
-}
+  // Loading
+  .cds--loading-overlay {
+    z-index: 9999;
+  }
+
+  // Datepicker
+  .cds--date-picker,
+  .cds--date-picker-container,
+  .cds--date-picker-container span,
+  .cds--date-picker-container span > .cds--date-picker__input {
+    width: 100% !important;
+  }

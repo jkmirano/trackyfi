@@ -30,6 +30,7 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
     this.form = new FormGroup({
       name: new FormControl(null, [Validators.required]),
       category: new FormControl(null, [Validators.required]),
+      due: new FormControl(null),
       expected: new FormControl(null),
       actual: new FormControl(null),
     });

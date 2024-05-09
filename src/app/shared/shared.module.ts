@@ -7,6 +7,7 @@ import { ChartsModule } from '@carbon/charts-angular';
 import {
   ButtonModule,
   CheckboxModule,
+  DatePickerModule,
   DialogModule,
   DropdownModule,
   GridModule,
@@ -51,6 +52,7 @@ const MODULES = [
   NumberModule,
   DropdownModule,
   LoadingModule,
+  DatePickerModule,
 ];
 
 @NgModule({
