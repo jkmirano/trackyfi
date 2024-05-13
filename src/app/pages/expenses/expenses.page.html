@@ -51,7 +51,11 @@
           ></svg>
         </button>
 
-        <button cdsButton="primary" size="lg" (click)="openExpenseModal()">
+        <button
+          cdsButton="primary"
+          size="lg"
+          (click)="openExpenseModal(undefined)"
+        >
           Add Expense
         </button>
       </cds-table-toolbar-content>
@@ -127,7 +131,11 @@
       <svg cdsIcon="edit" size="16" class="cds--toolbar-action__icon"></svg>
     </button>
 
-    <button [cdsButton]="'ghost'" [size]="'sm'" (click)="deleteExpense(data)">
+    <button
+      [cdsButton]="'ghost'"
+      [size]="'sm'"
+      (click)="openDeleteExpenseModal(data)"
+    >
       <svg
         cdsIcon="trash-can"
         size="16"

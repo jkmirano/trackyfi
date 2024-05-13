@@ -27,6 +27,7 @@ import { ModalComponent } from 'src/app/shared/components/modal/modal.component'
 import { CategoriesService } from 'src/app/shared/services/categories.service';
 import { formatDate } from '@angular/common';
 import { CategoryEnum } from 'src/app/shared/enums/category.enum';
+import { DeleteModalComponent } from 'src/app/shared/components/modal/delete-modal/delete-modal.component';
 
 @Component({
   selector: 'app-expenses',
@@ -37,7 +38,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
   // general
   destroyed = new Subject<void>();
   loading: boolean = false;
-  updateExpense: boolean = false;
+  updateExpense$: boolean = false;
   filter?: Object = {};
   categories: any[] = [];
   notificationConfig: ToastContent = {
@@ -49,6 +50,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     showClose: true,
   };
   expenseFormData$: Observable<any> = new Subject<any>();
+  delExpense$: Observable<any> = new Subject<any>();
 
   // Filter Form
   filterForm: FormGroup | any;
@@ -82,6 +84,14 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       alignment: 'center',
     },
     theme: 'g90',
+    color: {
+      scale: {
+        Housing: '#8b3ffc',
+        Food: '#0cbdba',
+        Miscellaneous: '#FFD53D',
+        Bills: '#4589ff',
+      },
+    },
   };
   // -- Line
   lineData: any[] = [];
@@ -101,6 +111,12 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     },
     height: '400px',
     theme: 'g90',
+    color: {
+      scale: {
+        Actual: '#8b3ffc',
+        Expected: '#0cbdba',
+      },
+    },
   };
 
   // Table
@@ -383,8 +399,10 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     });
   }
 
-  openExpenseModal(expenseData: any = undefined) {
-    if (expenseData) this.updateExpense = true;
+  openExpenseModal(expenseData: any) {
+    this.updateExpense$ = expenseData ? true : false;
+    if (!expenseData) this.categories.forEach((cat) => delete cat.selected);
+
     this.modalService.create({
       component: ModalComponent,
       inputs: {
@@ -397,6 +415,55 @@ export class ExpensesPage implements OnInit, AfterContentInit {
         data: this.expenseFormData$,
       },
     });
+  }
+
+  openDeleteExpenseModal(expenseData: any) {
+    this.modalService.create({
+      component: DeleteModalComponent,
+      inputs: {
+        formType: 'expense',
+        modalSize: 'sm',
+        openModal: true,
+        showCloseButton: true,
+        data: expenseData,
+        delExpense: this.delExpense$,
+      },
+    });
+  }
+
+  createExpense(payload: any) {
+    this.expenseService
+      .createExpense(payload)
+      .pipe(takeUntil(this.destroyed))
+      .subscribe({
+        next: (resp) => {
+          if (resp.status === 201) {
+            this.initData();
+          }
+        },
+        error: (err) => {
+          this.loading = false;
+          console.log(err.message);
+        },
+      });
+  }
+
+  updateExpense(_id: string, payload: any) {
+    this.updateExpense$ = false;
+    this.expenseService
+      .updateExpense(_id, payload)
+      .pipe(takeUntil(this.destroyed))
+      .subscribe({
+        next: (resp) => {
+          if (resp.status === 201) {
+            this.initData();
+          }
+        },
+        error: (err) => {
+          this.loading = false;
+          console.log(err.message);
+        },
+      });
   }
 
   deleteExpense(expenseData: any) {
@@ -418,6 +485,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
   }
 
   ngAfterContentInit(): void {
+    // Create/Update Expense
     // Will Trigger once create button is clicked
     // Will process the data for saving...
     this.expenseFormData$.subscribe((expenseFormData) => {
@@ -432,41 +500,19 @@ export class ExpensesPage implements OnInit, AfterContentInit {
         };
         this.loading = true;
 
-        if (!this.updateExpense) {
+        if (!this.updateExpense$) {
           // Create Expense
-          this.expenseService
-            .createExpense(payload)
-            .pipe(takeUntil(this.destroyed))
-            .subscribe({
-              next: (resp) => {
-                if (resp.status === 201) {
-                  this.initData();
-                }
-              },
-              error: (err) => {
-                this.loading = false;
-                console.log(err.message);
-              },
-            });
+          this.createExpense(payload);
         } else {
           // Update Expense
-          this.updateExpense = false;
-          this.expenseService
-            .updateExpense(expenseFormData._id, payload)
-            .pipe(takeUntil(this.destroyed))
-            .subscribe({
-              next: (resp) => {
-                if (resp.status === 201) {
-                  this.initData();
-                }
-              },
-              error: (err) => {
-                this.loading = false;
-                console.log(err.message);
-              },
-            });
+          this.updateExpense(expenseFormData._id, payload);
         }
       }
+    });
+
+    // Delete Expense
+    this.delExpense$.subscribe((delExp) => {
+      this.deleteExpense(delExp);
     });
   }
 

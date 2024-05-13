@@ -28,8 +28,14 @@ import {
 import { ReactiveFormsModule } from '@angular/forms';
 import { ModalComponent } from './components/modal/modal.component';
 import { ExpenseFormComponent } from './components/form/expense-form/expense-form.component';
+import { DeleteModalComponent } from './components/modal/delete-modal/delete-modal.component';
 
-const COMPONENTS = [HeaderComponent, ModalComponent, ExpenseFormComponent];
+const COMPONENTS = [
+  HeaderComponent,
+  ModalComponent,
+  ExpenseFormComponent,
+  DeleteModalComponent,
+];
 
 const MODULES = [
   CommonModule,
