@@ -1,3 +1,10 @@
+<cds-loading
+  [isActive]="loading"
+  [size]="'normal'"
+  [overlay]="true"
+  *ngIf="loading"
+></cds-loading>
+
 <div
   cdsGrid
   [useCssGrid]="true"
@@ -6,24 +13,13 @@
   [fullWidth]="true"
   class="px-point-5"
 >
-  <div
-    class="mb-1 mx-point-5"
-    cdsCol
-    [columnNumbers]="{sm: 4, md: 8, lg: 8}"
-  >
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{sm: 4, md: 8, lg: 8}">
     <cds-tile>
-      <ibm-pie-chart
-        [data]="pieData"
-        [options]="pieOptions"
-      ></ibm-pie-chart>
+      <ibm-pie-chart [data]="pieData" [options]="pieOptions"></ibm-pie-chart>
     </cds-tile>
   </div>
 
-  <div
-    class="mb-1 mx-point-5"
-    cdsCol
-    [columnNumbers]="{sm: 4, md: 8, lg: 8}"
-  >
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{sm: 4, md: 8, lg: 8}">
     <cds-tile>
       <ibm-line-chart
         [data]="lineData"
@@ -32,11 +28,39 @@
     </cds-tile>
   </div>
 
-  <div
-    class="mb-1 mx-point-5"
-    cdsCol
-    [columnNumbers]="{sm: 4, md: 8, lg: 16}"
-  >
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{sm: 4, md: 8, lg: 16}">
+    <cds-table-toolbar>
+      <cds-table-toolbar-content [formGroup]="filterForm">
+        <cds-table-toolbar-search
+          [expandable]="true"
+          formControlName="keyword"
+        ></cds-table-toolbar-search>
+
+        <button
+          cdsButton="ghost"
+          class="toolbar-action"
+          [cdsOverflowMenu]="templateRef"
+          placement="bottom"
+          [flip]="true"
+          [offset]="{ x: 3, y: 0 }"
+        >
+          <svg
+            cdsIcon="filter"
+            size="16"
+            class="cds--toolbar-action__icon"
+          ></svg>
+        </button>
+
+        <button
+          cdsButton="primary"
+          size="lg"
+          (click)="openExpenseModal(undefined)"
+        >
+          Add Expense
+        </button>
+      </cds-table-toolbar-content>
+    </cds-table-toolbar>
+
     <cds-table-container>
       <cds-table
         [model]="tableModel"
@@ -46,7 +70,77 @@
         [showSelectionColumn]="false"
         [striped]="true"
         [sortable]="true"
+        *ngIf="tableData && tableData.length > 0"
       ></cds-table>
+
+      <cds-table
+        [model]="tableModel"
+        [size]="'md'"
+        [skeleton]="loading"
+        [showSelectionColumn]="false"
+        [striped]="true"
+        *ngIf="!tableData || tableData.length <= 0"
+      >
+        <tbody>
+          <tr>
+            <td colspan="7" rowspan="3" style="text-align: center">
+              No Expense Data Found.
+            </td>
+          </tr>
+          <tr></tr>
+          <tr></tr>
+        </tbody>
+      </cds-table>
+
+      <!-- @TODO will be added later -->
+      <!-- <cds-pagination
+        [model]="tableModel"
+        (selectPage)="selectPage($event)"
+      ></cds-pagination> -->
     </cds-table-container>
   </div>
 </div>
+
+<ng-template #templateRef>
+  <div class="om-filter" (click)="overflowOnClick($event)">
+    <cds-radio-group
+      [legend]="'Category'"
+      ariaLabel="Category"
+      [orientation]="'vertical'"
+      (change)="selectedCategory($event)"
+    >
+      <cds-radio [value]="">None</cds-radio>
+      <ng-container *ngFor="let category of categories">
+        <cds-radio [value]="category.type">{{ category.name }}</cds-radio>
+      </ng-container>
+    </cds-radio-group>
+  </div>
+</ng-template>
+
+<ng-template #tableCurrencyRef let-data="data">
+  <div class="cell">&#x20B1; {{ data | number: '1.0' : 'en-us' }}</div>
+</ng-template>
+
+<ng-template #tableActionsRef let-data="data">
+  <div class="cell">
+    <button
+      [cdsButton]="'ghost'"
+      [size]="'sm'"
+      (click)="openExpenseModal(data)"
+    >
+      <svg cdsIcon="edit" size="16" class="cds--toolbar-action__icon"></svg>
+    </button>
+
+    <button
+      [cdsButton]="'ghost'"
+      [size]="'sm'"
+      (click)="openDeleteExpenseModal(data)"
+    >
+      <svg
+        cdsIcon="trash-can"
+        size="16"
+        class="cds--toolbar-action__icon"
+      ></svg>
+    </button>
+  </div>
+</ng-template>
