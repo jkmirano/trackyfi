@@ -120,3 +120,15 @@
   .cds--date-picker-container span > .cds--date-picker__input {
     width: 100% !important;
   }
+
+  // Overflow Menu
+  .om {
+    &-filter {
+      @extend .w-full;
+      @extend .p-point-5;
+
+      &__title {
+        @extend .mb-point-5;
+      }
+    }
+  }

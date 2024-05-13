@@ -87,16 +87,29 @@
           <tr></tr>
         </tbody>
       </cds-table>
+
+      <!-- @TODO will be added later -->
+      <!-- <cds-pagination
+        [model]="tableModel"
+        (selectPage)="selectPage($event)"
+      ></cds-pagination> -->
     </cds-table-container>
   </div>
 </div>
 
 <ng-template #templateRef>
-  <div style="padding: 0 1rem" (click)="overflowOnClick($event)">
-    <div style="padding-top: 0.5rem; color: grey">Category</div>
-    <cds-checkbox *ngFor="let category of categories">
-      {{category.name}}
-    </cds-checkbox>
+  <div class="om-filter" (click)="overflowOnClick($event)">
+    <cds-radio-group
+      [legend]="'Category'"
+      ariaLabel="Category"
+      [orientation]="'vertical'"
+      (change)="selectedCategory($event)"
+    >
+      <cds-radio [value]="">None</cds-radio>
+      <ng-container *ngFor="let category of categories">
+        <cds-radio [value]="category.type">{{ category.name }}</cds-radio>
+      </ng-container>
+    </cds-radio-group>
   </div>
 </ng-template>
 

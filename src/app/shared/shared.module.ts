@@ -18,7 +18,9 @@ import {
   ModalModule,
   NotificationModule,
   NumberModule,
+  PaginationModule,
   PlaceholderModule,
+  RadioModule,
   TableModule,
   ThemeModule,
   TilesModule,
@@ -53,6 +55,8 @@ const MODULES = [
   DropdownModule,
   LoadingModule,
   DatePickerModule,
+  PaginationModule,
+  RadioModule,
 ];
 
 @NgModule({

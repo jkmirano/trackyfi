@@ -344,12 +344,14 @@ export class ExpensesPage implements OnInit, AfterContentInit {
         },
       });
 
-    this.categoryCtrl.valueChanges.pipe(takeUntil(this.destroyed)).subscribe({
-      next: (role) => {
-        this.selectPage(1);
-        setTimeout(() => this.category$.next(role));
-      },
-    });
+    this.categoryCtrl.valueChanges
+      .pipe(takeUntil(this.destroyed), distinctUntilChanged())
+      .subscribe({
+        next: (category) => {
+          this.selectPage(1);
+          this.category$.next(category);
+        },
+      });
 
     combineLatest({
       keyword: this.keyword$,
@@ -550,5 +552,9 @@ export class ExpensesPage implements OnInit, AfterContentInit {
         }
       }
     });
+  }
+
+  selectedCategory(e: any) {
+    this.categoryCtrl.patchValue(e.value);
   }
 }
