@@ -37,6 +37,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
   // general
   destroyed = new Subject<void>();
   loading: boolean = false;
+  updateExpense: boolean = false;
   filter?: Object = {};
   categories: any[] = [];
   notificationConfig: ToastContent = {
@@ -464,7 +465,8 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     });
   }
 
-  openAddExpenseModal() {
+  openExpenseModal(expenseData: any = undefined) {
+    if (expenseData) this.updateExpense = true;
     this.modalService.create({
       component: ModalComponent,
       inputs: {
@@ -473,6 +475,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
         openModal: true,
         showCloseButton: true,
         categories: this.categories,
+        updateData: expenseData,
         data: this.expenseFormData$,
       },
     });
@@ -510,20 +513,41 @@ export class ExpensesPage implements OnInit, AfterContentInit {
           due: new Date(expenseFormData.due).toISOString(),
         };
         this.loading = true;
-        this.expenseService
-          .createExpense(payload)
-          .pipe(takeUntil(this.destroyed))
-          .subscribe({
-            next: (resp) => {
-              if (resp.status === 201) {
-                this.initData();
-              }
-            },
-            error: (err) => {
-              this.loading = false;
-              console.log(err.message);
-            },
-          });
+
+        if (!this.updateExpense) {
+          // Create Expense
+          this.expenseService
+            .createExpense(payload)
+            .pipe(takeUntil(this.destroyed))
+            .subscribe({
+              next: (resp) => {
+                if (resp.status === 201) {
+                  this.initData();
+                }
+              },
+              error: (err) => {
+                this.loading = false;
+                console.log(err.message);
+              },
+            });
+        } else {
+          // Update Expense
+          this.updateExpense = false;
+          this.expenseService
+            .updateExpense(expenseFormData._id, payload)
+            .pipe(takeUntil(this.destroyed))
+            .subscribe({
+              next: (resp) => {
+                if (resp.status === 201) {
+                  this.initData();
+                }
+              },
+              error: (err) => {
+                this.loading = false;
+                console.log(err.message);
+              },
+            });
+        }
       }
     });
   }

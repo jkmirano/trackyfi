@@ -15,6 +15,7 @@ export class ModalComponent implements OnInit {
     @Inject('openModal') public openModal: boolean = false,
     @Inject('showCloseButton') public showCloseButton: boolean = true,
     @Inject('categories') public categories: any[] = [],
+    @Inject('updateData') public updateData: any,
     @Inject('data') public data: any,
     private modalService: ModalService
   ) {}

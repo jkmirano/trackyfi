@@ -15,6 +15,7 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrls: ['./expense-form.component.scss'],
 })
 export class ExpenseFormComponent implements OnInit, OnDestroy {
+  @Input() data: any;
   @Input() dropdownItems: any[] = [];
   @Output() expenseFormValues: EventEmitter<any> = new EventEmitter();
   destroyed = new Subject<void>();
@@ -24,6 +25,7 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.formInit();
+    this.initDataUpdate();
   }
 
   formInit() {
@@ -33,10 +35,34 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
       due: new FormControl(null),
       expected: new FormControl(null),
       actual: new FormControl(null),
+      _id: new FormControl(null),
     });
     this.form.valueChanges
       .pipe(takeUntil(this.destroyed))
       .subscribe((formVal: any) => this.expenseFormValues.emit(formVal));
+  }
+
+  initDataUpdate() {
+    if (this.data) {
+      let selectedItem;
+      this.dropdownItems.forEach((item) => {
+        item.selected = false;
+        if (item.type === this.data.category.type) {
+          item.selected = true;
+          selectedItem = item;
+        }
+        return item;
+      });
+
+      this.form.patchValue({
+        name: this.data.name,
+        due: new Date(this.data.due),
+        category: selectedItem,
+        expected: this.data.expected,
+        actual: this.data.actual,
+        _id: this.data._id ? this.data._id : undefined,
+      });
+    }
   }
 
   ngOnDestroy(): void {

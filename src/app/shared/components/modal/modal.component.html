@@ -13,6 +13,7 @@
 
   <section cdsModalContent>
     <app-expense-form
+      [data]="updateData"
       [dropdownItems]="categories"
       (expenseFormValues)="getExpenseFormValues($event)"
       *ngIf="formType === 'expense'"
@@ -29,7 +30,7 @@
       modal-primary-focus
       (click)="closeModal(true)"
     >
-      Create
+      {{ data ? "Update" : "Create" }}
     </button>
   </cds-modal-footer>
 </cds-modal>
