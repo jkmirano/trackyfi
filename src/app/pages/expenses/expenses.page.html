@@ -83,7 +83,7 @@
       >
         <tbody>
           <tr>
-            <td colspan="7" rowspan="3" style="text-align: center">
+            <td colspan="8" rowspan="3" style="text-align: center">
               No Expense Data Found.
             </td>
           </tr>
@@ -109,16 +109,35 @@
       [orientation]="'vertical'"
       (change)="selectedCategory($event)"
     >
-      <cds-radio [value]="">None</cds-radio>
+      <cds-radio [value]="" [checked]="true">None</cds-radio>
       <ng-container *ngFor="let category of categories">
         <cds-radio [value]="category.type">{{ category.name }}</cds-radio>
+      </ng-container>
+    </cds-radio-group>
+
+    <hr />
+
+    <cds-radio-group
+      [legend]="'Status'"
+      ariaLabel="Status"
+      [orientation]="'vertical'"
+      (change)="selectedStatus($event)"
+    >
+      <cds-radio [value]="" [checked]="true">None</cds-radio>
+      <ng-container *ngFor="let status of statusList">
+        <cds-radio [value]="status.type">{{ status.name }}</cds-radio>
       </ng-container>
     </cds-radio-group>
   </div>
 </ng-template>
 
 <ng-template #tableCurrencyRef let-data="data">
-  <div class="cell">&#x20B1; {{ data | number: '1.0' : 'en-us' }}</div>
+  <div class="cell">
+    <ng-container *ngIf="data"
+      >&#x20B1; {{ data | number: '1.0' : 'en-us' }}</ng-container
+    >
+    <ng-container *ngIf="!data">n/a</ng-container>
+  </div>
 </ng-template>
 
 <ng-template #tableActionsRef let-data="data">

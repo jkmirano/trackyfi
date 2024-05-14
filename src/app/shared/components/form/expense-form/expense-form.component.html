@@ -36,7 +36,25 @@
       placeholder="Select"
       formControlName="category"
     >
-      <cds-dropdown-list [items]="dropdownItems"></cds-dropdown-list>
+      <cds-dropdown-list [items]="categories"></cds-dropdown-list>
+    </cds-dropdown>
+  </div>
+
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{ sm: 4, md: 8, lg: 16 }"
+  >
+    <cds-dropdown
+      label="Status"
+      [size]="'md'"
+      [dropUp]="false"
+      [warn]="false"
+      [warnText]="'warnText'"
+      placeholder="Select"
+      formControlName="status"
+    >
+      <cds-dropdown-list [items]="statusList"></cds-dropdown-list>
     </cds-dropdown>
   </div>
 
