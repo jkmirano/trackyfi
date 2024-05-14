@@ -1,4 +1,4 @@
 export enum ExpenseCostEnum {
-  Actual = 'Acutal',
+  Actual = 'Actual',
   Expected = 'Expected',
 }

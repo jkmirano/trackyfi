@@ -92,11 +92,10 @@
         </tbody>
       </cds-table>
 
-      <!-- @TODO will be added later -->
-      <!-- <cds-pagination
+      <cds-pagination
         [model]="tableModel"
         (selectPage)="selectPage($event)"
-      ></cds-pagination> -->
+      ></cds-pagination>
     </cds-table-container>
   </div>
 </div>
@@ -109,7 +108,6 @@
       [orientation]="'vertical'"
       (change)="selectedCategory($event)"
     >
-      <cds-radio [value]="" [checked]="true">None</cds-radio>
       <ng-container *ngFor="let category of categories">
         <cds-radio [value]="category.type">{{ category.name }}</cds-radio>
       </ng-container>
@@ -123,7 +121,6 @@
       [orientation]="'vertical'"
       (change)="selectedStatus($event)"
     >
-      <cds-radio [value]="" [checked]="true">None</cds-radio>
       <ng-container *ngFor="let status of statusList">
         <cds-radio [value]="status.type">{{ status.name }}</cds-radio>
       </ng-container>
