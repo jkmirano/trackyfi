@@ -43,8 +43,8 @@ export class ExpensesPage implements OnInit, AfterContentInit {
   loading: boolean = false;
   updateExpense$: boolean = false;
   filter?: Object = {};
-  categories: any[] = [];
-  statusList: any[] = [];
+  categories: any[] = [{ _id: '0', name: 'None', selected: true }];
+  statusList: any[] = [{ _id: '0', name: 'None', selected: true }];
   notificationConfig: ToastContent = {
     type: 'success',
     title: 'Sample toast',
@@ -165,7 +165,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       pageNumber: 1,
       pageSize: 10,
     };
-    this.initFirstExpenses();
+    this.initializeDataObservable();
     this.initGetCategories();
     this.initStatus();
   }
@@ -176,28 +176,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       .pipe(takeUntil(this.destroyed))
       .subscribe({
         next: (resp: any) => {
-          if (resp) {
-            this.statusList = resp.map((item: any) => {
-              return {
-                ...item,
-                content: item.name,
-              };
-            });
-          }
-        },
-        error: (err) => console.log(err),
-      });
-  }
-
-  initFirstExpenses() {
-    this.expenseService
-      .getExpenses(this.filter)
-      .pipe(takeUntil(this.destroyed))
-      .subscribe({
-        next: (expenses: any) => {
-          if (expenses && expenses.status === 200) {
-            this.initializeDataObservable();
-          }
+          if (resp) resp.map((item: any) => this.statusList.push(item));
         },
         error: (err) => console.log(err),
       });
@@ -209,14 +188,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       .pipe(takeUntil(this.destroyed))
       .subscribe({
         next: (resp: any) => {
-          if (resp) {
-            this.categories = resp.map((item: any) => {
-              return {
-                ...item,
-                content: item.name,
-              };
-            });
-          }
+          if (resp) resp.map((item: any) => this.categories.push(item));
         },
         error: (err) => console.log(err),
       });
@@ -316,16 +288,16 @@ export class ExpensesPage implements OnInit, AfterContentInit {
             this.tableData = data;
 
             this.tableModel.data = this.prepareData(data);
-            this.tableModel.currentPage = response?.meta?.page || 1;
-            this.tableModel.pageLength = response?.meta?.displayItem || 10;
-            this.tableModel.totalDataLength = response?.meta?.total || 0;
+            this.tableModel.currentPage = response?.meta?.pageNumber || 1;
+            this.tableModel.pageLength = response?.meta?.pageSize || 10;
+            this.tableModel.totalDataLength = response?.meta?.totalCount || 0;
             this.evalExpensePieData(data);
             this.evalExpenseLineData(data);
           } else {
             this.tableModel.data = [];
-            this.tableModel.currentPage = response?.meta?.page || 1;
-            this.tableModel.pageLength = response?.meta?.displayItem || 10;
-            this.tableModel.totalDataLength = response?.meta?.total || 0;
+            this.tableModel.currentPage = response?.meta?.pageNumber || 1;
+            this.tableModel.pageLength = response?.meta?.pageSize || 10;
+            this.tableModel.totalDataLength = response?.meta?.totalCount || 0;
             this.pieData = [];
           }
 
@@ -405,7 +377,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       });
       this.pieData = this.categories.map((category) => {
         return {
-          group: category.content,
+          group: category.name,
           value:
             category.type === CategoryEnum.Bills
               ? billsVal
@@ -556,7 +528,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
         const payload = {
           ...expenseFormData,
           category: expenseFormData.category.type,
-          status: StatusEnum.Pending,
+          status: expenseFormData.status.type,
           due: new Date(expenseFormData.due).toISOString(),
         };
         this.loading = true;
@@ -579,6 +551,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
 
   selectedCategory(e: any) {
     this.categoryCtrl.patchValue(e.value);
+    console.log(this.categories);
   }
 
   selectedStatus(e: any) {
