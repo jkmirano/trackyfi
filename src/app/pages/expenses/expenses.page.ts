@@ -176,7 +176,13 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       .pipe(takeUntil(this.destroyed))
       .subscribe({
         next: (resp: any) => {
-          if (resp) resp.map((item: any) => this.statusList.push(item));
+          if (resp)
+            resp.map((item: any) => {
+              this.statusList.push({
+                ...item,
+                content: item.name,
+              });
+            });
         },
         error: (err) => console.log(err),
       });
@@ -188,7 +194,13 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       .pipe(takeUntil(this.destroyed))
       .subscribe({
         next: (resp: any) => {
-          if (resp) resp.map((item: any) => this.categories.push(item));
+          if (resp)
+            resp.map((item: any) => {
+              this.categories.push({
+                ...item,
+                content: item.name,
+              });
+            });
         },
         error: (err) => console.log(err),
       });
@@ -551,10 +563,15 @@ export class ExpensesPage implements OnInit, AfterContentInit {
 
   selectedCategory(e: any) {
     this.categoryCtrl.patchValue(e.value);
-    console.log(this.categories);
+    this.categories.forEach((cat) => {
+      cat.selected = cat.type === e.value ? true : false;
+    });
   }
 
   selectedStatus(e: any) {
     this.statusCtrl.patchValue(e.value);
+    this.statusList.forEach((stat) => {
+      stat.selected = stat.type === e.value ? true : false;
+    });
   }
 }
