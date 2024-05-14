@@ -14,7 +14,8 @@
   <section cdsModalContent>
     <app-expense-form
       [data]="updateData"
-      [dropdownItems]="categories"
+      [categories]="categories"
+      [statusList]="statusList"
       (expenseFormValues)="getExpenseFormValues($event)"
       *ngIf="formType === 'expense'"
     ></app-expense-form>

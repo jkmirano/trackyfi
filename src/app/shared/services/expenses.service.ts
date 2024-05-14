@@ -14,10 +14,11 @@ export class ExpensesService {
   getExpenses(filter: any): Observable<Object> {
     let endpoint = `${this.apiUrl}expenses`;
     let params = new HttpParams();
-    const { keyword, category, pageNumber, pageSize } = filter;
+    const { keyword, category, status, pageNumber, pageSize } = filter;
 
     if (keyword) params = params.append('name', keyword);
     if (category) params = params.append('category', category);
+    if (status) params = params.append('status', status);
     if (pageNumber) params = params.append('pageNumber', pageNumber);
     if (pageSize) params = params.append('pageSize', pageSize);
 

@@ -16,7 +16,8 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class ExpenseFormComponent implements OnInit, OnDestroy {
   @Input() data: any;
-  @Input() dropdownItems: any[] = [];
+  @Input() categories: any[] = [];
+  @Input() statusList: any[] = [];
   @Output() expenseFormValues: EventEmitter<any> = new EventEmitter();
   destroyed = new Subject<void>();
   form: FormGroup | any;
@@ -33,6 +34,7 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
       name: new FormControl(null, [Validators.required]),
       category: new FormControl(null, [Validators.required]),
       due: new FormControl(null),
+      status: new FormControl(null),
       expected: new FormControl(null),
       actual: new FormControl(null),
       _id: new FormControl(null),
@@ -44,12 +46,21 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
 
   initDataUpdate() {
     if (this.data) {
-      let selectedItem;
-      this.dropdownItems.forEach((item) => {
+      let selectedCategoryItem;
+      let selectedStatusItem;
+      this.categories.forEach((item) => {
         item.selected = false;
-        if (item.type === this.data.category.type) {
+        if (item.type === this.data.category) {
           item.selected = true;
-          selectedItem = item;
+          selectedCategoryItem = item;
+        }
+        return item;
+      });
+      this.statusList.forEach((item) => {
+        item.selected = false;
+        if (item.type === this.data.status) {
+          item.selected = true;
+          selectedStatusItem = item;
         }
         return item;
       });
@@ -57,7 +68,8 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
       this.form.patchValue({
         name: this.data.name,
         due: new Date(this.data.due),
-        category: selectedItem,
+        category: selectedCategoryItem,
+        status: selectedStatusItem,
         expected: this.data.expected,
         actual: this.data.actual,
         _id: this.data._id ? this.data._id : undefined,

@@ -28,6 +28,9 @@ import { CategoriesService } from 'src/app/shared/services/categories.service';
 import { formatDate } from '@angular/common';
 import { CategoryEnum } from 'src/app/shared/enums/category.enum';
 import { DeleteModalComponent } from 'src/app/shared/components/modal/delete-modal/delete-modal.component';
+import { StatusService } from 'src/app/shared/services/status.service';
+import { StatusEnum } from 'src/app/shared/enums/status.enum';
+import { ExpenseCostEnum } from 'src/app/shared/enums/expense.enum';
 
 @Component({
   selector: 'app-expenses',
@@ -41,6 +44,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
   updateExpense$: boolean = false;
   filter?: Object = {};
   categories: any[] = [];
+  statusList: any[] = [];
   notificationConfig: ToastContent = {
     type: 'success',
     title: 'Sample toast',
@@ -56,11 +60,15 @@ export class ExpensesPage implements OnInit, AfterContentInit {
   filterForm: FormGroup | any;
   keyword$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   category$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  status$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   get searchCtrl() {
     return this.filterForm.get('keyword') as FormControl;
   }
   get categoryCtrl() {
     return this.filterForm.get('category') as FormControl;
+  }
+  get statusCtrl() {
+    return this.filterForm.get('status') as FormControl;
   }
 
   // table
@@ -129,6 +137,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     private router: Router,
     private route: ActivatedRoute,
     private categoryService: CategoriesService,
+    private statusService: StatusService,
     protected modalService: ModalService
   ) {}
 
@@ -146,6 +155,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     this.filterForm = new FormGroup({
       keyword: new FormControl(null),
       category: new FormControl(null),
+      status: new FormControl(null),
     });
   }
 
@@ -157,6 +167,26 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     };
     this.initFirstExpenses();
     this.initGetCategories();
+    this.initStatus();
+  }
+
+  initStatus() {
+    this.statusService
+      .getStatus()
+      .pipe(takeUntil(this.destroyed))
+      .subscribe({
+        next: (resp: any) => {
+          if (resp) {
+            this.statusList = resp.map((item: any) => {
+              return {
+                ...item,
+                content: item.name,
+              };
+            });
+          }
+        },
+        error: (err) => console.log(err),
+      });
   }
 
   initFirstExpenses() {
@@ -192,37 +222,6 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       });
   }
 
-  evalExpensePieData() {
-    if (this.categories.length > 0 && this.tableData.length > 0) {
-      let billsVal = 0;
-      let foodVal = 0;
-      let miscVal = 0;
-      let housingVal = 0;
-      this.tableData.forEach((data) => {
-        if (data.category.type === CategoryEnum.Bills) billsVal += data.actual;
-        if (data.category.type === CategoryEnum.Food) foodVal += data.actual;
-        if (data.category.type === CategoryEnum.Misc) miscVal += data.actual;
-        if (data.category.type === CategoryEnum.Housing)
-          housingVal += data.actual;
-      });
-      this.pieData = this.categories.map((category) => {
-        return {
-          group: category.content,
-          value:
-            category.type === CategoryEnum.Bills
-              ? billsVal
-              : category.type === CategoryEnum.Food
-              ? foodVal
-              : category.type === CategoryEnum.Misc
-              ? miscVal
-              : category.type === CategoryEnum.Housing
-              ? housingVal
-              : 0,
-        };
-      });
-    }
-  }
-
   initializeDataObservable() {
     this.selectPage(1);
     let page$ = this.route.queryParamMap.pipe(
@@ -243,6 +242,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
 
     this.keyword$.next(this.searchCtrl.value);
     this.category$.next(this.categoryCtrl.value);
+    this.status$.next(this.statusCtrl.value);
 
     this.searchCtrl.valueChanges
       .pipe(
@@ -266,22 +266,33 @@ export class ExpensesPage implements OnInit, AfterContentInit {
         },
       });
 
+    this.statusCtrl.valueChanges
+      .pipe(takeUntil(this.destroyed), distinctUntilChanged())
+      .subscribe({
+        next: (status) => {
+          this.selectPage(1);
+          this.status$.next(status);
+        },
+      });
+
     combineLatest({
       keyword: this.keyword$,
       category: this.category$,
-      pageLength: pageLength$,
-      page: page$,
+      status: this.status$,
+      pageSize: pageLength$,
+      pageNumber: page$,
     })
       .pipe(
         tap((_) => {
           this.loading = true;
         }),
-        switchMap(({ keyword, category, pageLength, page }) => {
+        switchMap(({ keyword, category, status, pageSize, pageNumber }) => {
           return this.expenseService.getExpenses({
             keyword,
             category,
-            pageLength,
-            page,
+            status,
+            pageSize,
+            pageNumber,
           });
         }),
         takeUntil(this.destroyed)
@@ -296,6 +307,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
             new TableHeaderItem({ data: 'Actual' }),
             new TableHeaderItem({ data: 'Variance' }),
             new TableHeaderItem({ data: 'Due' }),
+            new TableHeaderItem({ data: 'Status' }),
             new TableHeaderItem({ data: 'Actions' }),
           ];
 
@@ -307,7 +319,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
             this.tableModel.currentPage = response?.meta?.page || 1;
             this.tableModel.pageLength = response?.meta?.displayItem || 10;
             this.tableModel.totalDataLength = response?.meta?.total || 0;
-            this.evalExpensePieData();
+            this.evalExpensePieData(data);
             this.evalExpenseLineData(data);
           } else {
             this.tableModel.data = [];
@@ -327,6 +339,10 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     let tableData: TableItem[][] = responseData.map((data: any) => {
       let newRow: TableItem[] = [];
       let variance = 'n/a';
+      const category = this.categories.find(
+        (cat) => cat.type === data.category
+      );
+      const status = this.statusList.find((stat) => stat.type === data.status);
 
       if (data.expected && data.actual) {
         variance = (data.expected - data.actual).toString();
@@ -343,12 +359,18 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       }
 
       newRow.push(new TableItem({ data: data.name }));
-      newRow.push(new TableItem({ data: data.category.name }));
+      newRow.push(new TableItem({ data: category.name }));
       newRow.push(
-        new TableItem({ data: data.expected, template: this.tableCurrencyRef })
+        new TableItem({
+          data: data.expected ? data.expected : null,
+          template: this.tableCurrencyRef,
+        })
       );
       newRow.push(
-        new TableItem({ data: data.actual, template: this.tableCurrencyRef })
+        new TableItem({
+          data: data.actual ? data.actual : null,
+          template: this.tableCurrencyRef,
+        })
       );
       newRow.push(
         new TableItem({ data: variance, template: this.tableCurrencyRef })
@@ -356,10 +378,11 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       newRow.push(
         new TableItem({
           data: data.due
-            ? formatDate(new Date(data.due), 'MMMM d, y', 'en-us')
+            ? formatDate(new Date(data.due), 'MMMM dd, y', 'en-us')
             : 'n/a',
         })
       );
+      newRow.push(new TableItem({ data: status.name }));
       newRow.push(
         new TableItem({ data: data, template: this.tableActionsRef })
       );
@@ -368,22 +391,58 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     return tableData;
   }
 
+  evalExpensePieData(respData: any) {
+    if (respData.length > 0) {
+      let billsVal = 0;
+      let foodVal = 0;
+      let miscVal = 0;
+      let housingVal = 0;
+      respData.forEach((data: any) => {
+        if (data.category === CategoryEnum.Bills) billsVal += data.actual;
+        if (data.category === CategoryEnum.Food) foodVal += data.actual;
+        if (data.category === CategoryEnum.Misc) miscVal += data.actual;
+        if (data.category === CategoryEnum.Housing) housingVal += data.actual;
+      });
+      this.pieData = this.categories.map((category) => {
+        return {
+          group: category.content,
+          value:
+            category.type === CategoryEnum.Bills
+              ? billsVal
+              : category.type === CategoryEnum.Food
+              ? foodVal
+              : category.type === CategoryEnum.Misc
+              ? miscVal
+              : category.type === CategoryEnum.Housing
+              ? housingVal
+              : 0,
+        };
+      });
+    } else {
+      this.pieData = [];
+    }
+  }
+
   evalExpenseLineData(data: any) {
     const expectedData = data.map((d: any) => {
       return {
-        group: 'Expected',
-        key: formatDate(new Date(d.due), 'MMM-d', 'en-us'),
+        group: ExpenseCostEnum.Expected,
+        key: new Date(d.due),
         value: d.expected,
       };
     });
     const actualData = data.map((d: any) => {
       return {
-        group: 'Actual',
-        key: formatDate(new Date(d.due), 'MMM-d', 'en-us'),
+        group: ExpenseCostEnum.Actual,
+        key: new Date(d.due),
         value: d.actual,
       };
     });
     this.lineData = [...expectedData, ...actualData];
+    this.lineData.sort((a: any, b: any) => a.key - b.key);
+    this.lineData.forEach((d) => {
+      d.key = formatDate(new Date(d.key), 'MMM-d', 'en-us');
+    });
   }
 
   overflowOnClick = (event: any) => {
@@ -401,7 +460,10 @@ export class ExpensesPage implements OnInit, AfterContentInit {
 
   openExpenseModal(expenseData: any) {
     this.updateExpense$ = expenseData ? true : false;
-    if (!expenseData) this.categories.forEach((cat) => delete cat.selected);
+    if (!expenseData) {
+      this.categories.forEach((cat) => delete cat.selected);
+      this.statusList.forEach((stat) => delete stat.selected);
+    }
 
     this.modalService.create({
       component: ModalComponent,
@@ -411,6 +473,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
         openModal: true,
         showCloseButton: true,
         categories: this.categories,
+        statusList: this.statusList,
         updateData: expenseData,
         data: this.expenseFormData$,
       },
@@ -492,10 +555,8 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       if (expenseFormData) {
         const payload = {
           ...expenseFormData,
-          category: {
-            name: expenseFormData.category.name,
-            type: expenseFormData.category.type,
-          },
+          category: expenseFormData.category.type,
+          status: StatusEnum.Pending,
           due: new Date(expenseFormData.due).toISOString(),
         };
         this.loading = true;
@@ -518,5 +579,9 @@ export class ExpensesPage implements OnInit, AfterContentInit {
 
   selectedCategory(e: any) {
     this.categoryCtrl.patchValue(e.value);
+  }
+
+  selectedStatus(e: any) {
+    this.statusCtrl.patchValue(e.value);
   }
 }
