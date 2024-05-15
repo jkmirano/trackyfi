@@ -23,7 +23,6 @@ import { ExpensesService } from 'src/app/shared/services/expenses.service';
 import { Filter16, Edit16, TrashCan16 } from '@carbon/icons';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { CategoriesService } from 'src/app/shared/services/categories.service';
 import { formatDate } from '@angular/common';
 import { CategoryEnum } from 'src/app/shared/enums/category.enum';
@@ -31,6 +30,7 @@ import { DeleteModalComponent } from 'src/app/shared/components/modal/delete-mod
 import { StatusService } from 'src/app/shared/services/status.service';
 import { StatusEnum } from 'src/app/shared/enums/status.enum';
 import { ExpenseCostEnum } from 'src/app/shared/enums/expense.enum';
+import { ExpenseFormModalComponent } from 'src/app/shared/components/modal/expense-form-modal/expense-form-modal.component';
 
 @Component({
   selector: 'app-expenses',
@@ -138,7 +138,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     private route: ActivatedRoute,
     private categoryService: CategoriesService,
     private statusService: StatusService,
-    protected modalService: ModalService
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -442,7 +442,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     });
   }
 
-  openExpenseModal(expenseData: any) {
+  async openExpenseModal(expenseData: any) {
     this.updateExpense$ = expenseData ? true : false;
     if (!expenseData) {
       this.categories.forEach((cat) => delete cat.selected);
@@ -450,7 +450,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     }
 
     this.modalService.create({
-      component: ModalComponent,
+      component: ExpenseFormModalComponent,
       inputs: {
         formType: 'expense',
         modalSize: 'sm',

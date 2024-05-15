@@ -26,15 +26,15 @@ import {
   TilesModule,
 } from 'carbon-components-angular';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ModalComponent } from './components/modal/modal.component';
 import { ExpenseFormComponent } from './components/form/expense-form/expense-form.component';
 import { DeleteModalComponent } from './components/modal/delete-modal/delete-modal.component';
+import { ExpenseFormModalComponent } from './components/modal/expense-form-modal/expense-form-modal.component';
 
 const COMPONENTS = [
   HeaderComponent,
-  ModalComponent,
   ExpenseFormComponent,
   DeleteModalComponent,
+  ExpenseFormModalComponent,
 ];
 
 const MODULES = [

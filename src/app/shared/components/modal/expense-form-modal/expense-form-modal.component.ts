@@ -2,11 +2,11 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { ModalService } from 'carbon-components-angular';
 
 @Component({
-  selector: 'app-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.scss'],
+  selector: 'app-expense-form-modal',
+  templateUrl: './expense-form-modal.component.html',
+  styleUrls: ['./expense-form-modal.component.scss'],
 })
-export class ModalComponent implements OnInit {
+export class ExpenseFormModalComponent implements OnInit {
   formExpenseVal$: any;
 
   constructor(
