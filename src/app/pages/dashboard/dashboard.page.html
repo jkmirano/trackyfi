@@ -1,0 +1,91 @@
+<div
+  cdsGrid
+  [useCssGrid]="true"
+  [condensed]="true"
+  [narrow]="true"
+  [fullWidth]="true"
+  class="px-point-5"
+>
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{sm: 4}"
+  >
+    <cds-tile>
+      <h1>$10,000</h1>
+      <p>Savings</p>
+    </cds-tile>
+  </div>
+
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{sm: 4}"
+  >
+    <cds-tile>
+      <h1>$5,000</h1>
+      <p>Income</p>
+    </cds-tile>
+  </div>
+
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{sm: 4}"
+  >
+    <cds-tile>
+      <h1>$2,000</h1>
+      <p>Expenses</p>
+    </cds-tile>
+  </div>
+
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{sm: 4}"
+  >
+    <cds-tile>
+      <h1>$3,000</h1>
+      <p>Loans</p>
+    </cds-tile>
+  </div>
+
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{sm: 4, md: 8, lg: 16}"
+  >
+    <cds-tile>
+      <ibm-meter-chart
+        [data]="meterData"
+        [options]="meterOptions"
+      ></ibm-meter-chart>
+    </cds-tile>
+  </div>
+
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{sm: 4, md: 8, lg: 8}"
+  >
+    <cds-tile>
+      <ibm-donut-chart
+        [data]="donutData"
+        [options]="donutOptions"
+      ></ibm-donut-chart>
+    </cds-tile>
+  </div>
+
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{sm: 4, md: 8, lg: 8}"
+  >
+    <cds-tile>
+      <ibm-line-chart
+        [data]="lineData"
+        [options]="lineOptions"
+      ></ibm-line-chart>
+    </cds-tile>
+  </div>
+</div>

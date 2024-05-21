@@ -1,0 +1,34 @@
+<cds-header
+  name="TrackyFi"
+  brand=""
+  [route]="['dashboard']"
+>
+  <cds-header-navigation>
+    <cds-header-item
+      [route]="['dashboard']"
+      [isCurrentPage]="currentNav === '/dashboard'"
+      (navigation)="navigatePath('/dashboard')"
+    >Dashboard</cds-header-item>
+
+    <cds-header-item
+      [route]="['expenses']"
+      [isCurrentPage]="currentNav === '/expenses'"
+      (navigation)="navigatePath('/expenses')"
+    >Expenses</cds-header-item>
+
+    <cds-header-item
+      [route]="['statistics']"
+      [isCurrentPage]="currentNav === '/statistics'"
+      (navigation)="navigatePath('/statistics')"
+    >Statistics</cds-header-item>
+  </cds-header-navigation>
+
+  <!-- <cds-header-global>
+    <cds-header-action description="action">
+      <svg cdsIcon="fade" size="20"></svg>
+    </cds-header-action>
+    <cds-header-action description="action">
+      <svg cdsIcon="fade" size="20"></svg>
+    </cds-header-action>
+  </cds-header-global> -->
+</cds-header>

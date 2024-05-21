@@ -1,0 +1,89 @@
+<div
+  cdsGrid
+  [useCssGrid]="true"
+  [fullWidth]="true"
+  class="px-none"
+  [formGroup]="form"
+>
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{ sm: 4, md: 8, lg: 16 }"
+  >
+    <cds-text-label [disabled]="false" [warn]="false" [warnText]="'warnText'">
+      Name
+      <input
+        cdsText
+        [size]="'md'"
+        [warn]="false"
+        [placeholder]="'Name'"
+        formControlName="name"
+      />
+    </cds-text-label>
+  </div>
+
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
+    <cds-dropdown
+      label="Category"
+      [size]="'md'"
+      [dropUp]="false"
+      [warn]="false"
+      [warnText]="'warnText'"
+      placeholder="Select"
+      formControlName="category"
+    >
+      <cds-dropdown-list [items]="categories"></cds-dropdown-list>
+    </cds-dropdown>
+  </div>
+
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
+    <cds-dropdown
+      label="Status"
+      [size]="'md'"
+      [dropUp]="false"
+      [warn]="false"
+      [warnText]="'warnText'"
+      placeholder="Select"
+      formControlName="status"
+    >
+      <cds-dropdown-list [items]="statusList"></cds-dropdown-list>
+    </cds-dropdown>
+  </div>
+
+  <div
+    class="mb-1 mx-point-5"
+    cdsCol
+    [columnNumbers]="{ sm: 4, md: 8, lg: 16 }"
+  >
+    <cds-date-picker
+      [label]="'Due Date'"
+      [size]="'md'"
+      [warn]="false"
+      [warnText]="'warnText'"
+      [language]="'en'"
+      [dateFormat]="'m/d/Y'"
+      formControlName="due"
+    ></cds-date-picker>
+  </div>
+
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
+    <cds-number
+      [label]="'Expected'"
+      [warn]="false"
+      [warnText]="'warnText'"
+      [size]="'md'"
+      formControlName="expected"
+      class="w-full"
+    ></cds-number>
+  </div>
+
+  <div class="mb-1 mx-point-5" cdsCol [columnNumbers]="{ sm: 4, md: 8, lg: 8 }">
+    <cds-number
+      [label]="'Actual'"
+      [warn]="false"
+      [warnText]="'warnText'"
+      [size]="'md'"
+      formControlName="actual"
+    ></cds-number>
+  </div>
+</div>

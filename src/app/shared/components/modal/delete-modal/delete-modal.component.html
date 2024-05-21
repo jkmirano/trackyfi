@@ -1,0 +1,30 @@
+<cds-modal
+  [size]="modalSize"
+  [open]="openModal"
+  (overlaySelected)="closeModal()"
+>
+  <cds-modal-header
+    (closeSelect)="closeModal()"
+    [showCloseButton]="showCloseButton"
+  >
+    <h3 cdsModalHeaderHeading>Delete Expense</h3>
+  </cds-modal-header>
+
+  <section cdsModalContent>
+    <p>Are you sure you want to delete this expense?</p>
+  </section>
+
+  <cds-modal-footer>
+    <button
+      class="cds--btn cds--btn--secondary"
+      modal-primary-focus
+      (click)="closeModal()"
+    >
+      Cancel
+    </button>
+
+    <button class="cds--btn cds--btn--danger" (click)="closeModal(true)">
+      Delete
+    </button>
+  </cds-modal-footer>
+</cds-modal>
