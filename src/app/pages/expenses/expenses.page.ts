@@ -165,9 +165,9 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       pageNumber: 1,
       pageSize: 10,
     };
-    this.initializeDataObservable();
     this.initGetCategories();
     this.initStatus();
+    this.initializeDataObservable();
   }
 
   initStatus() {
