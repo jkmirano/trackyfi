@@ -5,30 +5,31 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: '/dashboard'
+    redirectTo: '/expenses',
   },
   {
     path: 'dashboard',
     loadChildren: () =>
-      import('./pages/dashboard/dashboard.module')
-      .then(m => m.DashboardModule)
+      import('./pages/dashboard/dashboard.module').then(
+        (m) => m.DashboardModule
+      ),
   },
   {
     path: 'expenses',
     loadChildren: () =>
-      import('./pages/expenses/expenses.module')
-      .then(m => m.ExpensesModule)
+      import('./pages/expenses/expenses.module').then((m) => m.ExpensesModule),
   },
   {
     path: 'statistics',
     loadChildren: () =>
-      import('./pages/statistics/statistics.module')
-      .then(m => m.StatisticsModule)
-  }
+      import('./pages/statistics/statistics.module').then(
+        (m) => m.StatisticsModule
+      ),
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
