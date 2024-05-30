@@ -176,13 +176,15 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       .pipe(takeUntil(this.destroyed))
       .subscribe({
         next: (resp: any) => {
-          if (resp)
+          if (resp) {
+            this.statusList = [];
             resp.map((item: any) => {
               this.statusList.push({
                 ...item,
                 content: item.name,
               });
             });
+          }
         },
         error: (err) => console.log(err),
       });
@@ -194,13 +196,15 @@ export class ExpensesPage implements OnInit, AfterContentInit {
       .pipe(takeUntil(this.destroyed))
       .subscribe({
         next: (resp: any) => {
-          if (resp)
+          if (resp) {
+            this.categories = [];
             resp.map((item: any) => {
               this.categories.push({
                 ...item,
                 content: item.name,
               });
             });
+          }
         },
         error: (err) => console.log(err),
       });
