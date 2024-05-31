@@ -26,6 +26,10 @@ const routes: Routes = [
         (m) => m.StatisticsModule
       ),
   },
+  {
+    path: '**',
+    redirectTo: '/expenses',
+  },
 ];
 
 @NgModule({

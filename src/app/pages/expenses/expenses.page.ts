@@ -167,7 +167,6 @@ export class ExpensesPage implements OnInit, AfterContentInit {
     };
     this.initGetCategories();
     this.initStatus();
-    this.initializeDataObservable();
   }
 
   initStatus() {
@@ -204,6 +203,7 @@ export class ExpensesPage implements OnInit, AfterContentInit {
                 content: item.name,
               });
             });
+            this.initializeDataObservable();
           }
         },
         error: (err) => console.log(err),
